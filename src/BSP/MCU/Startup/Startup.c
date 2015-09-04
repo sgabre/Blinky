@@ -5,11 +5,9 @@
  */
 
 #include "BSP/Common/Common.h"
-#include "BSP/MCU/INT/INT.h"
+
 #include "BSP/MCU/Startup/Startup.h"
 #include "BSP/MCU/Watchdog/Watchdog.h"
-
-extern void main(void);
 
 #if (defined(IAR))
 	#pragma section = ".data"
@@ -18,6 +16,8 @@ extern void main(void);
 	#pragma section = "CodeRelocate"
 	#pragma section = "CodeRelocateRam"
 #endif
+
+extern void main(void);
 
 /*!
  * \brief   This function initialise the microcontroller stack and heaps
@@ -29,7 +29,7 @@ extern void main(void);
  * - zero-initialized data section
  * - Relocate ROM Code In RAM 
  */
-void Startup_Setup(void)
+void StartUp_Setup(void)
 {
 
 #if (defined(CW))	
@@ -58,9 +58,7 @@ void Startup_Setup(void)
     if (__VECTOR_RAM != __VECTOR_TABLE)
     {
         for (n = 0; n < 0x104; n++)
-        {
-        	__VECTOR_RAM[n] = __VECTOR_TABLE[n];
-        }
+            __VECTOR_RAM[n] = __VECTOR_TABLE[n];
     }
     /* Point the VTOR to the new copy of the vector table */
     Vector_Write((uint32)__VECTOR_RAM);
@@ -115,10 +113,22 @@ void Startup_Setup(void)
           *code_relocate_ram++ = *code_relocate++;
     #endif
 }
+
 void start(void)
 {
+	/* Disable the watchdog timer */
 	Watchdog_Disable();
-    Startup_Setup();
-    main();
-    while(1);
+
+	/* Copy any vector or data sections that need to be in RAM */
+	StartUp_Setup();
+
+	/* Perform processor initialization */
+	//sysinit();
+
+
+	/* Jump to main process */
+	main();
+
+	/* No actions to perform after this so wait forever */
+	while(1);
 }
