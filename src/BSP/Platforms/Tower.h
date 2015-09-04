@@ -14,6 +14,9 @@
 #ifdef TWR_K20D72M
 #define MCU_MK20DZ72
 
+#define BUS_CLOCK_HZ        (32768 * 640)
+
+
 /* Input Clock Info   */
 #define CLK0_FREQ_HZ        8000000
 #define CLK0_TYPE           CRYSTAL
