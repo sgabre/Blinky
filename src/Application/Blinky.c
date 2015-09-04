@@ -9,6 +9,10 @@ void main (void)
 {
     CPU_Setup();
 
+    Trace_Setup();
+
+    TRACE("Blinky Software\n");
+
     Led_Setup();
 
     while(1)
