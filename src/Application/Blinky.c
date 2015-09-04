@@ -5,6 +5,9 @@
 
 #include "BSP/Drivers/LED/LED.h"
 #include "Utils/Delay.h"
+#ifdef SPY_ON
+#include "Application/Spy/Spy.h"
+#endif
 
 static void Periodic(void)
 {
@@ -19,16 +22,25 @@ void main (void)
     CPU_Setup();
 
     Trace_Setup();
-
+	TRACE("Blinky Software\n");
+	
+    #ifdef SPY_ON
+    Spy_Setup();
+	#endif
     
-    TRACE("Blinky Software\n");
+    
     Led_Setup();
 	PIT_Setup((uint32) Periodic);
 	 PIT_Start();
 	 
     while(1)
     {
+		#ifndef SPY_ON
     	Led_Blink(eGreen);
-    	Delay(500*_MS);
+		#endif
+    	TRACE(".");
+		#ifdef SPY_ON
+    	Spy_Run();
+		#endif
     }
 }
