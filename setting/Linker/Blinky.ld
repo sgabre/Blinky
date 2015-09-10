@@ -154,25 +154,25 @@ SECTIONS
     KEEP (*(.fini_array*))
     PROVIDE_HIDDEN (__fini_array_end = .);
 
-	___ROM_AT = .;
+	_sROMData = .;
   } > m_text
   
   /* Initialized data sections goes into RAM, load LMA copy after code */
-  .data : AT(___ROM_AT)
+  .data : AT(_sROMData)
   {
     . = ALIGN(4);
-    _sdata = .;        /* create a global symbol at data start */
+    _sRAMData = .;        /* create a global symbol at data start */
     *(.data)           /* .data sections */
     *(.data*)          /* .data* sections */
 
     . = ALIGN(4);
 
-    _edata = .;        /* define a global symbol at data end */
+    _eRAMData = .;        /* define a global symbol at data end */
   } > m_data
 
-  ___data_size = _edata - _sdata;
+  ___data_size = _eRAMData - _sRAMData;
   
-  ___m_data_20000000_ROMStart = ___ROM_AT + SIZEOF(.data);
+  ___m_data_20000000_ROMStart = _sROMData + SIZEOF(.data);
   
   .m_data_20000000 : AT(___m_data_20000000_ROMStart)
   {
@@ -191,16 +191,16 @@ SECTIONS
   .bss :
   {
     /* This is used by the startup in order to initialize the .bss section */
-    __START_BSS = .;
-	  PROVIDE ( __bss_start__ = __START_BSS );
+    _sBSS = .;
+	  PROVIDE ( __bss_start__ = _sBSS );
 
     *(.bss)
     *(.bss*)
     *(COMMON)
 
     . = ALIGN(4);
-    __END_BSS = .;
- 	  PROVIDE ( __bss_end__ = __END_BSS );
+    _eBSS = .;
+ 	  PROVIDE ( __bss_end__ = _eBSS );
   } > m_data
 
   /* User_heap_stack section, used to check that there is enough RAM left */
