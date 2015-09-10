@@ -22,7 +22,7 @@ define symbol __region_RAM2_end__ = 0x20004000;
 define exported symbol __VECTOR_TABLE = 0x00000000;
 define exported symbol __VECTOR_RAM = 0x1fffc000;
 
-define exported symbol __BOOT_STACK_ADDRESS = __region_RAM2_end__ - 8;	//0x20003FF8;
+define exported symbol __STACK_POINTER_BASE_ADDRESS = __region_RAM2_end__ - 8;	//0x20003FF8;
 
 define symbol __code_start__ = 0x00000410;
 
@@ -48,6 +48,5 @@ place at address mem:__code_start__ { readonly section .noinit };
 
 place in ROM_region   { readonly, block CodeRelocate};
 
-place in RAM_region   { readwrite, block CodeRelocateRam,
-                        block CSTACK, block HEAP };
+place in RAM_region   { readwrite, block CodeRelocateRam, block CSTACK, block HEAP };
 /* place in FlexRAM_region   { section .flex_ram }; */
