@@ -1,134 +1,240 @@
-/*
- * File:    startup.c
- * Purpose: Generic startup code
+/* GNUC Startup library
+ *    Copyright © 2005 Freescale semiConductor Inc. All Rights Reserved.
  *
+ * $Date: 2011/09/21 06:41:34 $
+ * $Revision: 1.4 $
  */
 
-#include "BSP/Common/Common.h"
 
-#include "BSP/MCU/Startup/Startup.h"
+/*
+ *	startup.c	-	entry-point for ARM programs
+ *
+ */
+#include "BSP/Common/Common.h"
+#include <string.h>
+#include <stdlib.h>
+#include "BSP/MCU/MK20D7.h"
+#include "BSP/MCU/INT/Vectors.h"
 #include "BSP/MCU/Watchdog/Watchdog.h"
 
-#if (defined(IAR))
-	#pragma section = ".data"
-	#pragma section = ".data_init"
-	#pragma section = ".bss"
-	#pragma section = "CodeRelocate"
-	#pragma section = "CodeRelocateRam"
+#define __MAX_CMDLINE_ARGS 10
+static char *argv[__MAX_CMDLINE_ARGS] = { 0 };
+
+#if __GNUC__
+#define __call_static_initializers __init_cpp
 #endif
+extern int __argc_argv(char **, int);
+extern char __SP_INIT[];
+extern void __call_static_initializers(void);
+extern int main(int, char **);
 
-extern void main(void);
+extern void _start(void);
 
-/*!
- * \brief   This function initialise the microcontroller stack and heaps
- * \return  None
- *
- * This function initialise the microcontroller stack and heaps
- * - Copy the Vector Table in RAM
- * - initialized data section 
- * - zero-initialized data section
- * - Relocate ROM Code In RAM 
+extern void Registers_Setup();
+extern void User_Setup();
+
+
+extern void __copy_rom_sections_to_ram(void);
+/*
+ * Routine to flush cache follow the ROM to RAM copy
  */
-void StartUp_Setup(void)
+void __FlushCache(unsigned long dst, unsigned long size)
 {
+	//TBD
+}
 
-#if (defined(CW))	
-    extern char __START_BSS[];
-    extern char __END_BSS[];
-    extern uint32 __DATA_ROM[];
-    extern uint32 __DATA_RAM[];
-    extern char __DATA_END[];
+
+/*
+ *	Routine to copy a single section from ROM to RAM ...
+ */
+void __CopyROMSection(unsigned long dst, unsigned long src, unsigned long size)
+{
+	unsigned long len = size;
+
+	const int size_int = sizeof(int);
+	const int mask_int = sizeof(int)-1;
+
+	const int size_short = sizeof(short);
+	const int mask_short = sizeof(short)-1;
+
+	const int size_char = sizeof(char);
+
+	if( dst == src || size == 0)
+	{
+		return;
+	}
+
+
+	while( len > 0)
+	{
+
+		if( !(src & mask_int) && !(dst & mask_int) && len >= size_int)
+		{
+			*((int *)dst)  = *((int*)src);
+			dst += size_int;
+			src += size_int;
+			len -= size_int;
+		}
+		else if( !(src & mask_short) && !(dst & mask_short) && len >= size_short)
+		{
+			*((short *)dst)  = *((short*)src);
+			dst += size_short;
+			src += size_short;
+			len -= size_short;
+		}
+		else
+		{
+			*((char *)dst)  = *((char*)src);
+			dst += size_char;
+			src += size_char;
+			len -= size_char;
+		}
+	}
+}
+
+
+static void BSS_Setup(void)
+{
+	extern char __START_BSS[];
+	extern char __END_BSS[];
+
+	unsigned long len = __END_BSS - __START_BSS;
+  unsigned long dst = (unsigned long) __START_BSS;
+
+	const int size_int = sizeof(int);
+	const int mask_int = sizeof(int)-1;
+
+	const int size_short = sizeof(short);
+	const int mask_short = sizeof(short)-1;
+
+	const int size_char = sizeof(char);
+
+	if( len == 0)
+	{
+		return;
+	}
+
+
+	while( len > 0)
+	{
+
+		if( !(dst & mask_int) && len >= size_int)
+		{
+			*((int *)dst)  = 0;
+			dst += size_int;
+			len -= size_int;
+		}
+		else if( !(dst & mask_short) && len >= size_short)
+		{
+			*((short *)dst)  = 0;
+			dst += size_short;
+			len -= size_short;
+		}
+		else
+		{
+			*((char *)dst)  = 0;
+			dst += size_char;
+			len -= size_char;
+		}
+	}
+}
+
+
+// __init_registers, __init_hardware, __init_user suggested by Kobler
+#ifdef ARM
+void __attribute__ ((weak)) Registers_Setup(void)
+#elif IAR
+void Registers_Setup(void)
 #endif
-
-    /* Declare a counter we'll use in all of the copy loops */
-    uint32 n;
-
-    /* Declare pointers for various data sections. These pointers
-     * are initialized using values pulled in from the linker file
-     */
-    uint8 * data_ram, * data_rom, * data_rom_end;
-    uint8 * bss_start, * bss_end;
-
-
-    /* Addresses for VECTOR_TABLE and VECTOR_RAM come from the linker file */
-    extern uint32 __VECTOR_TABLE[];
-    extern uint32 __VECTOR_RAM[];
-
-    /* Copy the vector table to RAM */
-    if (__VECTOR_RAM != __VECTOR_TABLE)
-    {
-        for (n = 0; n < 0x104; n++)
-            __VECTOR_RAM[n] = __VECTOR_TABLE[n];
-    }
-    /* Point the VTOR to the new copy of the vector table */
-    Vector_Write((uint32)__VECTOR_RAM);
-
-    /* Get the addresses for the .data section (initialized data section) */
-    #if (defined(CW))
-        data_ram = (uint8 *)__DATA_RAM;
-	data_rom = (uint8 *)__DATA_ROM;
-	data_rom_end  = (uint8 *)__DATA_END; /* This is actually a RAM address in CodeWarrior */
-	n = data_rom_end - data_ram;
-    #elif (defined(IAR))
-	data_ram = __section_begin(".data");
-	data_rom = __section_begin(".data_init");
-	data_rom_end = __section_end(".data_init");
-	n = data_rom_end - data_rom;
-    #endif		
-		
-	/* Copy initialized data from ROM to RAM */
-	while (n--)
-		*data_ram++ = *data_rom++;
-	
-	
-    /* Get the addresses for the .bss section (zero-initialized data) */
-    #if (defined(CW))
-	bss_start = (uint8 *)__START_BSS;
-	bss_end = (uint8 *)__END_BSS;
-    #elif (defined(IAR))
-	bss_start = __section_begin(".bss");
-	bss_end = __section_end(".bss");
-    #endif
-	
-
-    /* Clear the zero-initialized data section */
-    n = bss_end - bss_start;
-    while(n--)
-      *bss_start++ = 0;
-
-    /* Get addresses for any code sections that need to be copied from ROM to RAM.
-     * The IAR tools have a predefined keyword that can be used to mark individual
-     * functions for execution from RAM. Add "__ramfunc" before the return type in
-     * the function prototype for any routines you need to execute from RAM instead
-     * of ROM. ex: __ramfunc void foo(void);
-     */
-    #if (defined(IAR))
-  	uint8* code_relocate_ram = __section_begin("CodeRelocateRam");
-	uint8* code_relocate = __section_begin("CodeRelocate");
-    uint8* code_relocate_end = __section_end("CodeRelocate");
-
-        /* Copy functions from ROM to RAM */
-        n = code_relocate_end - code_relocate;
-        while (n--)
-          *code_relocate_ram++ = *code_relocate++;
-    #endif
-}
-
-void start(void)
 {
-	/* Disable the watchdog timer */
-	Watchdog_Disable();
+  #if defined(SCB_CPACR)
+  /* Initialize FPU */
+  SCB_CPACR |= SCB_CPACR_CP10(3U) | SCB_CPACR_CP11(3U); 
+  #endif
 
-	/* Copy any vector or data sections that need to be in RAM */
-	StartUp_Setup();
-
-	/* Perform processor initialization */
-	//sysinit();
-
-
-	/* Jump to main process */
-	main();
-
-	/* No actions to perform after this so wait forever */
-	while(1);
 }
+
+#ifdef ARM
+void __attribute__ ((weak)) User_Setup(void)
+#elif IAR
+void  User_Setup(void)
+#endif
+{
+
+}
+
+
+// To keep iar debugger happy
+void __iar_program_start(void);
+void __thumb_startup(void);
+void __iar_program_start()
+{
+	__thumb_startup();
+}
+
+void __thumb_startup(void)
+{
+		int addr = (int)__SP_INIT;
+
+	    extern unsigned long ___ROM_AT[];
+	    extern unsigned long _sdata[];
+	    extern unsigned long ___data_size;
+
+	    extern unsigned long __sVectorTable;
+	    extern unsigned long __sRAMVectorTable;
+	    extern unsigned long __VectorTableSize;
+
+
+	    unsigned long data_ram = (unsigned long)&_sdata;
+	    unsigned long data_rom = (unsigned long)&___ROM_AT;
+	    unsigned long size     = (unsigned long)&___data_size; /* This is actually a RAM address in CodeWarrior */
+
+		// Setup registers
+		Registers_Setup();
+
+		  /*** PE initialization code after reset ***/
+		  SCB_VTOR = (uint32_t)(&__sVectorTable); /* Set the interrupt vector table position */
+		  //Vector_Write(uint32_t vtor);
+
+		  Watchdog_Disable();
+
+		// setup the stack before we attempt anything else
+		// skip stack setup if __SP_INIT is 0
+		// assume sp is already setup.
+		  //asm("mov r0,%0");
+		  __asm (
+		"mov	r0,%0\n\t"
+		"cmp	r0,#0\n\t"
+		"beq	skip_sp\n\t"
+		"mov	sp,r0\n\t"
+		"sub	sp,#4\n\t"
+		"mov	r0,#0\n\t"
+		"mvn	r0,r0\n\t"
+		"str	r0,[sp,#0]\n\t"
+		"add	sp,#4\n\t"
+		"skip_sp:\n\t"
+		::"r"(addr));
+
+
+		//	zero-fill the .bss section
+		BSS_Setup();
+
+		__CopyROMSection(data_ram, data_rom, size);
+
+
+		__CopyROMSection((uint32_t)&__sRAMVectorTable, (uint32_t)&__sVectorTable,0x400);
+		SCB_VTOR = (uint32_t)(&__sRAMVectorTable); /* Set the interrupt vector table position */
+
+		//	call C++ static initializers
+		//  __call_static_initializers();
+
+		// initializations before main, user specific
+		User_Setup();
+
+		main(0, argv);
+
+		//	should never get here
+		while (1);
+
+}
+
