@@ -25,7 +25,8 @@
 
 
 /* Entry Point */
-ENTRY(__thumb_startup) 
+ENTRY(__thumb_startup)  
+/*ENTRY(__startup)*/ 
 
 
 /* Highest address of the user mode stack */
