@@ -15,7 +15,12 @@ typedef struct
 
   extern uint32_t __SP_INIT;
 
-extern void __thumb_startup(void);
+
+#ifdef IAR
+  extern void __startup(void);
+#elif (ARM)
+ extern void __thumb_startup(void);
+#endif
 
 
 
@@ -30,8 +35,11 @@ const VectorTable_ts __vector_table =
 	/*[ISR name                           | No. Address  	 | Priority | Name                          ]*/
     &__SP_INIT,                        /* 0x00  0x00000000   -   ivINT_Initial_Stack_Pointer    used by PE */
 	{
-		
+#ifdef IAR
+		(Vector_t)&__startup,
+#elif (ARM)
 		(Vector_t)&__thumb_startup,
+#endif
 		(Vector_t)&__NMIInterrupt,	/* 0x02  0x00000008  | 2   		| ivINT_NMI  					]*/
 		(Vector_t)&__DefaultInterrupt,	/* 0x03  0x0000000C  | 1   		| ivINT_Hard_Fault              ]*/
 		(Vector_t)&__DefaultInterrupt,	/* 0x04  0x00000010  | -   		| ivINT_Mem_Manage_Fault        ]*/
