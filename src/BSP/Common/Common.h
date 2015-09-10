@@ -15,13 +15,6 @@
 
 #include "BSP/MCU/INT/INT.h"
 
-#ifdef TRACE_ON
-#include <stdlib.h>
-#include "Library/std/io.h"
-#ifdef IAR
-#include "intrinsics.h"
-#endif
-#endif
 
 #include "BSP/Drivers/Trace/Trace.h"
 
