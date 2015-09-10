@@ -17,12 +17,15 @@ static void Periodic(void)
     Interrupt_Enable(INT_PIT0-16);
     PIT_ClearInterruptFlag();
 }
+
 void main (void)
 {
-    CPU_Setup();
+	CPU_Setup();
 
+	#ifdef TRACE_ON
     Trace_Setup();
 	TRACE("Blinky Software\n");
+	#endif
 	
     #ifdef SPY_ON
     Spy_Setup();
@@ -31,12 +34,13 @@ void main (void)
     
     Led_Setup();
 	PIT_Setup((uint32) Periodic);
-	 PIT_Start();
-	 
-    while(1)
+	PIT_Start();
+
+	while(1)
     {
 		#ifndef SPY_ON
     	Led_Blink(eGreen);
+    	Delay(500*_MS);
 		#endif
     	TRACE(".");
 		#ifdef SPY_ON
