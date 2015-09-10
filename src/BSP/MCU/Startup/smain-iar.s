@@ -2,7 +2,7 @@
  * File:	crt0.s
  * Purpose:	Lowest level routines for Kinetis.
  *
- * Notes:
+ * Notes:	
  *
  */
 
@@ -14,7 +14,7 @@
   	EXPORT  __startup
 __startup
 
-    MOV     r0,#0                   ; Initialize the GPRs
+        MOV     r0,#0                   ; Initialize the GPRs
 	MOV     r1,#0
 	MOV     r2,#0
 	MOV     r3,#0
