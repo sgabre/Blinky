@@ -10,11 +10,11 @@
 
 
 
-  	SECTION .noinit : CODE
-  	EXPORT  __startup
-__startup
+	SECTION .noinit : CODE
+	EXPORT  __startup
 
-        MOV     r0,#0                   ; Initialize the GPRs
+__startup
+	MOV     r0,#0                   ; Initialize the GPRs
 	MOV     r1,#0
 	MOV     r2,#0
 	MOV     r3,#0
@@ -28,10 +28,8 @@ __startup
 	MOV     r11,#0
 	MOV     r12,#0
 	CPSIE   i                       ; Unmask interrupts
-        import start
-        BL      start                  ; call the C code
+	import __thumb_startup
+    BL      __thumb_startup                  ; call the C code
 __done
-        B       __done
-
-
-        END
+    B       __done
+	END
