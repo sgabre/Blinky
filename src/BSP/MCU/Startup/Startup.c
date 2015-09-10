@@ -16,6 +16,14 @@
 #include "BSP/MCU/INT/Vectors.h"
 #include "BSP/MCU/Watchdog/Watchdog.h"
 
+
+#if (defined(IAR))
+	#pragma section = ".data"
+	#pragma section = ".data_init"
+	#pragma section = ".bss"
+#endif
+
+
 #define __MAX_CMDLINE_ARGS 10
 static char *argv[__MAX_CMDLINE_ARGS] = {0};
 
@@ -30,6 +38,8 @@ extern int main(int, char **);
 extern void _start(void);
 extern void Registers_Setup();
 extern void User_Setup();
+
+
 
 
 /*
@@ -152,13 +162,16 @@ void User_Setup(void)
 // To keep iar debugger happy
 void __iar_program_start(void);
 void __thumb_startup(void);
+/*
 void __iar_program_start()
 {
 	__thumb_startup();
 }
-
+*/
 void __thumb_startup(void)
 {
+	extern unsigned long __sVectorTable;
+	extern unsigned long __sRAMVectorTable;
 #ifdef ARM
 	int addr = (int)__SP_INIT;
 	extern unsigned long _sROMData;
@@ -166,9 +179,17 @@ void __thumb_startup(void)
 	extern unsigned long _eRAMData;
 	extern char _sBSS[];
 	extern char _eBSS[];
-	extern unsigned long __sVectorTable;
-	extern unsigned long __sRAMVectorTable;
+	unsigned long size = (unsigned long) (((unsigned long) &_eRAMData) - ((unsigned long) &_sRAMData));
+#elif IAR
+	uint8* _sBSS = __section_begin(".bss");
+	uint8* _eBSS = __section_end(".bss");
+	uint8* _sRAMData = __section_begin(".data");
+	uint8* _sROMData = __section_begin(".data_init");
+	uint8* _eROMData = __section_end(".data_init");
+	unsigned long size = (unsigned long) (((unsigned long) &_eROMData) - ((unsigned long) &_sROMData));
 #endif
+
+
 	/* Setup registers */
 	Registers_Setup();
 
@@ -181,6 +202,7 @@ void __thumb_startup(void)
 	// setup the stack before we attempt anything else
 	// skip stack setup if __SP_INIT is 0
 	// assume sp is already setup.
+	#ifdef ARM
 	__asm (
 			"mov	r0,%0\n\t"
 			"cmp	r0,#0\n\t"
@@ -193,11 +215,12 @@ void __thumb_startup(void)
 			"add	sp,#4\n\t"
 			"skip_sp:\n\t"
 			::"r"(addr));
+#endif
 
 	//	zero-fill the .bss section
 	BSS_Setup((unsigned long) &_sBSS, (unsigned long) (((unsigned long) &_eBSS) - ((unsigned long) &_sBSS)));
 
-	__CopyROMSection((unsigned long) &_sRAMData, (unsigned long) &_sROMData, (unsigned long) (((unsigned long) &_eRAMData) - ((unsigned long) &_sRAMData)));
+	__CopyROMSection((unsigned long) &_sRAMData, (unsigned long) &_sROMData, size);
 
 	__CopyROMSection((uint32_t) &__sRAMVectorTable, (uint32_t) &__sVectorTable, 0x400);
 	SCB_VTOR = (uint32_t) (&__sRAMVectorTable); /* Set the interrupt vector table position */
