@@ -187,7 +187,7 @@
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="[IAR][TWR] Blinky Release/Blinky.out"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="Blinky"/>
 <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="true"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="iar.arm.toolchain.project.exe.configuration.release.v5.4.0.1439668731"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value=""/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/Blinky"/>
 </listAttribute>
