@@ -1,3 +1,9 @@
+/*!
+ * \file Blinky.c
+ *
+ * \brief It contains the Entry point use to executed the Blinky software.
+ *
+ */
 #include "BSP/Common/Common.h"
 
 #include "BSP/MCU/CPU/CPU.h"
@@ -9,7 +15,8 @@
 #include "Application/Spy/Spy.h"
 #endif
 
-static void Periodic(void)
+/*! \brief When the interruption occurs, it is running the entire set of tasks in turn. */
+static void OnInterrupt(void)
 {
     PIT_ClearInterruptFlag();
     Interrupt_Disable(INT_PIT0-16);
@@ -18,6 +25,7 @@ static void Periodic(void)
     PIT_ClearInterruptFlag();
 }
 
+/*!  \brief It establishes the overall logic of the code. */
 void main (void)
 {
 	CPU_Setup();
@@ -33,7 +41,7 @@ void main (void)
     
     
     Led_Setup();
-	PIT_Setup((uint32) Periodic);
+	PIT_Setup((uint32) OnInterrupt);
 	PIT_Start();
 
 	while(1)
@@ -42,7 +50,6 @@ void main (void)
     	Led_Blink(eGreen);
     	Delay(500*_MS);
 		#endif
-    	TRACE(".");
 		#ifdef SPY_ON
     	Spy_Run();
 		#endif
