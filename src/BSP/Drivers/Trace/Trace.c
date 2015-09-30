@@ -55,10 +55,10 @@ void Trace_Setup(void)
 #ifdef TRACE_ON
     if(mThis.IsSetup == 0U)
     {
-        /*LDRA_NOANALYSIS*/
-        /* Set the trace clock to the core clock frequency */
-        SIM_SOPT2 |= SIM_SOPT2_TRACECLKSEL_MASK;
+        SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK;
+        SIM_SCGC5 |= SIM_SCGC5_PORTE_MASK;
 
+        SIM_SOPT2 |= SIM_SOPT2_TRACECLKSEL_MASK; /* Set the trace clock to the core clock frequency */
         /* Enable the TRACE_CLKOUT pin function on PTA6 (alt7 function) */
         /* Enable high drive strength to support high toggle rate */
         PORTA_PCR6 = ( PORT_PCR_MUX(0x7) | PORT_PCR_DSE_MASK);
@@ -79,23 +79,9 @@ void Trace_Setup(void)
  */
 static void Trace_SetupPort(void)
 {
-
-    uint32 Clock = 0;
-    /*LDRA_NOANALYSIS*/
-       /* UART0 and UART1 are clocked from the core clock, but all other UARTs are
-         * clocked from the peripheral clock. So we have to determine which clock
-         * to send to the uart_init function.
-         */
-        if ((TERM_PORT == UART0_BASE_PTR) | (TERM_PORT == UART1_BASE_PTR))
-        {
-            Clock = MCG_GetClock();
-        }
-        else
-        {
-             Clock = MCG_GetClock();
-        }
-        /*LDRA_ANALYSIS*/
-        UART_Setup(TERM_PORT, Clock, TERMINAL_BAUD);
+	uint32 Clock = 0;
+	Clock = MCG_GetClock();
+	UART_Setup(TERM_PORT, Clock, TERMINAL_BAUD);
 }
 
 

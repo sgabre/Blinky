@@ -8,9 +8,6 @@
 #ifndef __TOWER_H__
 #define __TOWER_H__
 
-/********************************************************************/
-
-
 #ifdef TWR_K20D72M
 #define MCU_MK20DZ72
 

@@ -42,7 +42,7 @@ void Cpu_SetBASEPRI(uint32_t Level)
 */
 void CPU_Setup(void)
 {
-	//MCG_Setup();
+	MCG_Setup();
 
 	/* Initialization of the SIM module */
   /* PORTA_PCR4: ISF=0,MUX=7 */

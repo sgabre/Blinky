@@ -4,8 +4,11 @@
 #include "BSP/MCU/INT/DefaultInterrupt.h"
 #include "BSP/MCU/INT/NMIInterrupt.h"
 
-  /* Interrupt vector table type definition */
-  typedef void (*const Vector_t)(void);
+extern uint32 __SP_INIT;
+extern uint32 __sRAMVectorTable[];
+
+/* Interrupt vector table type definition */
+typedef void (*const Vector_t)(void);
 
 typedef struct
 {
@@ -13,7 +16,7 @@ typedef struct
   Vector_t __Vector[0xFF];
 } VectorTable_ts;
 
-  extern uint32_t __SP_INIT;
+
 
 
 #ifdef IAR
@@ -296,9 +299,6 @@ const VectorTable_ts __vector_table =
 		(Vector_t)&__DefaultInterrupt,
 	}
 };
-
-  extern uint32 __sRAMVectorTable[];
-
 void Vector_PlugIn(uint16 irq,uint32 FunctionAddress)
 {
    if(FunctionAddress != 0)

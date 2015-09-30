@@ -76,14 +76,10 @@ void MCG_Setup(void)
         * so they must be configured appropriately before calling the PLL
         * init function to ensure that clocks remain in valid ranges.
         */
-       // iSIM_SetClock1OutputDivider(PeripheralBase, Divider);
-       // iSIM_SetClock2OutputDivider(PeripheralBase, Divider)
-       // iSIM_SetClock3OutputDivider(PeripheralBase, Divider)
-       // iSIM_SetClock4OutputDivider(PeripheralBase, Divider)
         SIM_CLKDIV1 = ( 0
                         | SIM_CLKDIV1_OUTDIV1(0)
                         | SIM_CLKDIV1_OUTDIV2(0)
-                        | SIM_CLKDIV1_OUTDIV3(1)
+			| SIM_CLKDIV1_OUTDIV3(1)
                         | SIM_CLKDIV1_OUTDIV4(2) );
 
         if (PMC_REGSC &  PMC_REGSC_ACKISO_MASK)

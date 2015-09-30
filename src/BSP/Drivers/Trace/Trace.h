@@ -9,8 +9,8 @@
 
 #ifdef TRACE_ON
 #include <stdlib.h>
-#include "Library/std/io.h"
 #ifdef IAR
+#include "Library/std/io.h"
 #include "intrinsics.h"
 #endif
 #endif

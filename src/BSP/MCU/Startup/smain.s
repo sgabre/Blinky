@@ -1,20 +1,8 @@
-/*
- * File:	crt0.s
- * Purpose:	Lowest level routines for Kinetis.
- *
- * Notes:	
- *
- */
-
 ;         AREA   Crt0, CODE, READONLY      ; name this block of code
-
-
-
-	SECTION .noinit : CODE
-	EXPORT  __startup
-
+  	SECTION .noinit : CODE
+  	EXPORT  __startup
 __startup
-	MOV     r0,#0                   ; Initialize the GPRs
+    MOV     r0,#0                   ; Initialize the GPRs
 	MOV     r1,#0
 	MOV     r2,#0
 	MOV     r3,#0
@@ -28,8 +16,8 @@ __startup
 	MOV     r11,#0
 	MOV     r12,#0
 	CPSIE   i                       ; Unmask interrupts
-	import __thumb_startup
+    import __thumb_startup
     BL      __thumb_startup                  ; call the C code
 __done
-    B       __done
-	END
+        B       __done
+        END

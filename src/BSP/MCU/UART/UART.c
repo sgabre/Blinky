@@ -39,83 +39,82 @@
  */
 
 #ifdef TWR_K20D72M
-	#define UART0_Setup()	iSIM_SetClockGate(SIM_BASE_PTR, iSIM_CLOCK_GATE_UART0, iENABLE);  \
-							iPort_SetPinMuxControl(PORTD_BASE_PTR, 6, iPORT_MUX_CONTROL_ALT3); \
-							iPort_SetPinMuxControl(PORTD_BASE_PTR, 7, iPORT_MUX_CONTROL_ALT3); \
+#define UART0_Setup()	iSIM_SetClockGate(SIM_BASE_PTR, iSIM_CLOCK_GATE_UART0, iENABLE); \
+						iPort_SetPinMuxControl(PORTD_BASE_PTR, 6, iPORT_MUX_CONTROL_ALT3);\
+						iPort_SetPinMuxControl(PORTD_BASE_PTR, 7, iPORT_MUX_CONTROL_ALT3);\
 
-	#define UART1_Setup()	iSIM_SetClockGate(SIM_BASE_PTR, iSIM_CLOCK_GATE_UART1, iENABLE); \
-							iPort_SetPinMuxControl(PORTE_BASE_PTR, 0, iPORT_MUX_CONTROL_ALT3); \
-							iPort_SetPinMuxControl(PORTE_BASE_PTR, 1, iPORT_MUX_CONTROL_ALT3); \
+#define UART1_Setup()	iSIM_SetClockGate(SIM_BASE_PTR, iSIM_CLOCK_GATE_UART1, iENABLE); \
+				        iPort_SetPinMuxControl(PORTE_BASE_PTR, 0, iPORT_MUX_CONTROL_ALT3); \
+				        iPort_SetPinMuxControl(PORTE_BASE_PTR, 1, iPORT_MUX_CONTROL_ALT3); \
 
 
-	#define UART2_Setup()	SIM_SCGC4 |= SIM_SCGC4_UART2_MASK; \
-							PORTD_PCR3 = PORT_PCR_MUX(0x3);	\
-							PORTD_PCR2 = PORT_PCR_MUX(0x3);\
+#define UART2_Setup()	SIM_SCGC4 |= SIM_SCGC4_UART2_MASK; \
+				        PORTD_PCR3 = PORT_PCR_MUX(0x3);	\
+				        PORTD_PCR2 = PORT_PCR_MUX(0x3);\
 
-	#define UART3_Setup()	SIM_SCGC4 |= SIM_SCGC4_UART3_MASK;\
-							PORTC_PCR17 = PORT_PCR_MUX(0x3);\
-							PORTC_PCR16 = PORT_PCR_MUX(0x3);\
+#define UART3_Setup()	SIM_SCGC4 |= SIM_SCGC4_UART3_MASK;\
+				        PORTC_PCR17 = PORT_PCR_MUX(0x3);\
+				        PORTC_PCR16 = PORT_PCR_MUX(0x3);\
 
-	#define UART4_Setup()	SIM_SCGC1 |= SIM_SCGC1_UART4_MASK;\
-							PORTE_PCR24 = PORT_PCR_MUX(0x3);\
-							PORTE_PCR25 = PORT_PCR_MUX(0x3);\
+#define UART4_Setup()	SIM_SCGC1 |= SIM_SCGC1_UART4_MASK;\
+				        PORTE_PCR24 = PORT_PCR_MUX(0x3);\
+				        PORTE_PCR25 = PORT_PCR_MUX(0x3);\
 
 
 #elif EJ151_REV1
-	#ifdef ES80SW
-		#define UART0_Setup()
+#ifdef ES80SW
+#define UART0_Setup()
 
-		#define UART1_Setup()	iSIM_SetClockGate(SIM_BASE_PTR, iSIM_CLOCK_GATE_UART1, iENABLE); \
-								iPort_SetPinMuxControl(PORTE_BASE_PTR,0, iPORT_MUX_CONTROL_ALT3);\
-								iPort_SetPinMuxControl(PORTE_BASE_PTR,1, iPORT_MUX_CONTROL_ALT3);\
-
-
-		#define UART2_Setup()
+#define UART1_Setup()	iSIM_SetClockGate(SIM_BASE_PTR, iSIM_CLOCK_GATE_UART1, iENABLE); \
+				        iPort_SetPinMuxControl(PORTE_BASE_PTR,0, iPORT_MUX_CONTROL_ALT3);\
+				        iPort_SetPinMuxControl(PORTE_BASE_PTR,1, iPORT_MUX_CONTROL_ALT3);\
 
 
-		#define UART3_Setup()	iSIM_SetClockGate(SIM_BASE_PTR, iSIM_CLOCK_GATE_UART3, iENABLE);\
-								iPort_SetPinMuxControl(PORTE_BASE_PTR,4, iPORT_MUX_CONTROL_ALT3);\
-								iPort_SetPinMuxControl(PORTE_BASE_PTR,5, iPORT_MUX_CONTROL_ALT3);\
+#define UART2_Setup()
 
-		#define UART4_Setup()
-	#endif
 
-	#ifdef ES79SW
-	#endif
+#define UART3_Setup()	iSIM_SetClockGate(SIM_BASE_PTR, iSIM_CLOCK_GATE_UART3, iENABLE);\
+				        iPort_SetPinMuxControl(PORTE_BASE_PTR,4, iPORT_MUX_CONTROL_ALT3);\
+				        iPort_SetPinMuxControl(PORTE_BASE_PTR,5, iPORT_MUX_CONTROL_ALT3);\
+
+#define UART4_Setup()
+#endif
+#ifdef ES79SW
+#endif
 #elif EJ151_REV2
 
-	#ifdef ES80SW
-		#define UART0_Setup()
+#ifdef ES80SW
+#define UART0_Setup()
 
-		#define UART1_Setup()	iSIM_SetClockGate(SIM_BASE_PTR, iSIM_CLOCK_GATE_UART1, iENABLE); \
-								iPort_SetPinMuxControl(PORTE_BASE_PTR,0, iPORT_MUX_CONTROL_ALT3);\
-								iPort_SetPinMuxControl(PORTE_BASE_PTR,1, iPORT_MUX_CONTROL_ALT3);\
-
-
-		#define UART2_Setup()
+#define UART1_Setup()	iSIM_SetClockGate(SIM_BASE_PTR, iSIM_CLOCK_GATE_UART1, iENABLE); \
+				        iPort_SetPinMuxControl(PORTE_BASE_PTR,0, iPORT_MUX_CONTROL_ALT3);\
+				        iPort_SetPinMuxControl(PORTE_BASE_PTR,1, iPORT_MUX_CONTROL_ALT3);\
 
 
-		#define UART3_Setup()	iSIM_SetClockGate(SIM_BASE_PTR, iSIM_CLOCK_GATE_UART3, iENABLE);\
-								iPort_SetPinMuxControl(PORTE_BASE_PTR,4, iPORT_MUX_CONTROL_ALT3);\
-								iPort_SetPinMuxControl(PORTE_BASE_PTR,5, iPORT_MUX_CONTROL_ALT3);\
-
-		#define UART4_Setup()
-	#endif
-
-	#ifdef ES79SW
-		#define UART0_Setup() 	iSIM_SetClockGate(SIM_BASE_PTR, iSIM_CLOCK_GATE_UART0, iENABLE); \
-								iPort_SetPinMuxControl(PORTB_BASE_PTR,16, iPORT_MUX_CONTROL_ALT3);\
-								iPort_SetPinMuxControl(PORTB_BASE_PTR,17, iPORT_MUX_CONTROL_ALT3);\
+#define UART2_Setup()
 
 
-		#define UART1_Setup()
+#define UART3_Setup()	iSIM_SetClockGate(SIM_BASE_PTR, iSIM_CLOCK_GATE_UART3, iENABLE);\
+				        iPort_SetPinMuxControl(PORTE_BASE_PTR,4, iPORT_MUX_CONTROL_ALT3);\
+				        iPort_SetPinMuxControl(PORTE_BASE_PTR,5, iPORT_MUX_CONTROL_ALT3);\
 
-		#define UART2_Setup()
+#define UART4_Setup()
+#endif
 
-		#define UART3_Setup()
+#ifdef ES79SW
+#define UART0_Setup() 	iSIM_SetClockGate(SIM_BASE_PTR, iSIM_CLOCK_GATE_UART0, iENABLE); \
+						iPort_SetPinMuxControl(PORTB_BASE_PTR,16, iPORT_MUX_CONTROL_ALT3);\
+						iPort_SetPinMuxControl(PORTB_BASE_PTR,17, iPORT_MUX_CONTROL_ALT3);\
 
-		#define UART4_Setup()
-	#endif
+
+#define UART1_Setup()
+
+#define UART2_Setup()
+
+#define UART3_Setup()
+
+#define UART4_Setup()
+#endif
 
 #endif
 /*!
